@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(MyApp());
@@ -105,9 +106,26 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
+final now = DateTime.now();
+final formatter = DateFormat('yyyyMMdd');
+
 Future<Meal> fetchMeal() async {
+  String formatted = formatter.format(now);
+  var mealCode;
+  debugPrint(now.hour.toString());
+  if (now.hour >= 20 && now.hour < 24) {
+    // 내일 오전 급식
+    mealCode = 1;
+    formatted = formatter.format(now.add(Duration(days: 1)));
+  } else if (now.hour >= 9 && now.hour < 14) {
+    mealCode = 2;
+  } else if (now.hour >= 15 && now.hour < 19) {
+    mealCode = 3;
+  } else if (now.hour >= 0 && now.hour < 9) {
+    mealCode = 1;
+  }
   final res = await http.get(Uri.parse(
-      'https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=M10&SD_SCHUL_CODE=8000376&Type=json&KEY=76ebe67f34c44b7ba5c10ac9f3b4060e&MLSV_FROM_YMD=20210323&MLSV_TO_YMD=20210323'));
+      "https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=M10&MMEAL_SC_CODE=$mealCode&SD_SCHUL_CODE=8000376&Type=json&KEY=76ebe67f34c44b7ba5c10ac9f3b4060e&MLSV_FROM_YMD=$formatted&MLSV_TO_YMD=$formatted"));
   if (res.statusCode == 200) {
     return Meal.fromJson(
         json.decode(res.body)['mealServiceDietInfo'][1]['row'][0]);
@@ -116,28 +134,73 @@ Future<Meal> fetchMeal() async {
   }
 }
 
+Future<Schedule> fetchSchedule() async {
+  String firstDayOfMonth = formatter.format(DateTime(now.year, now.month, 1));
+  String endOfMonth = formatter.format(DateTime(now.year, now.month + 1, 0));
+  debugPrint(firstDayOfMonth + ", " + endOfMonth);
+  final res = await http.get(Uri.parse(
+      'https://open.neis.go.kr/hub/SchoolSchedule?ATPT_OFCDC_SC_CODE=M10&SD_SCHUL_CODE=8000376&Type=json&AA_FROM_YMD=20210301&AA_TO_YMD=20210321'));
+  if (res.statusCode == 200) {
+    return Schedule.fromJson(json.decode(res.body)['SchoolSchedule'][1]);
+  } else {
+    throw Exception("Failed..");
+  }
+}
+
 class Meal {
-  final int mealCode;
+  final String mealName;
   final String meal;
 
-  Meal({this.meal, this.mealCode});
+  Meal({this.meal, this.mealName});
 
   factory Meal.fromJson(Map<String, dynamic> json) {
-    String pattern = r'(^[0-9]+$)';
+    var mealName = '';
+    switch (int.parse(json['MMEAL_SC_CODE'])) {
+      case 1:
+        mealName = "오늘의 아침";
+        break;
+      case 2:
+        mealName = "오늘의 점심";
+        break;
+      case 3:
+        mealName = "오늘의 저녁";
+    }
+    if (now.hour >= 20 && now.hour < 24) {
+      mealName = "내일의 아침";
+    }
     return Meal(
         meal: json['DDISH_NM']
             .replaceAll(new RegExp(r"[0-9.*]"), "")
             .replaceAll('<br/>', "\n"),
-        mealCode: int.parse(json['MMEAL_SC_CODE']));
+        mealName: mealName);
+  }
+}
+
+class Schedule {
+  final String schedule;
+
+  Schedule({this.schedule});
+  factory Schedule.fromJson(Map<String, dynamic> json) {
+    String scheduleString = '';
+    for (int i = 0; i < json['row'].length; i++) {
+      if (i == json['row'].length - 1) {
+        scheduleString += (json['row'][i]['EVENT_NM']);
+      } else {
+        scheduleString += (json['row'][i]['EVENT_NM'] + "\n");
+      }
+    }
+    return Schedule(schedule: scheduleString);
   }
 }
 
 class _MyHomePageState extends State<MyHomePage> {
   Future<Meal> meal;
+  Future<Schedule> schedule;
   @override
   void initState() {
     super.initState();
     meal = fetchMeal();
+    schedule = fetchSchedule();
   }
 
   @override
@@ -182,7 +245,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CardWidget(
-                              cardTitle: '오늘의 급식',
+                              cardTitle: snapshot.data.mealName,
                               cardContent: snapshot.data.meal);
                         } else if (snapshot.hasError) {
                           return CardWidget(
@@ -191,10 +254,20 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         return CircularProgressIndicator();
                       }),
-                  CardWidget(
-                    cardTitle: '📅 이달의 학사일정',
-                    cardContent: '1일 3.1절',
-                  ),
+                  FutureBuilder(
+                      future: schedule,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return CardWidget(
+                              cardTitle: '📅 이달의 학사일정',
+                              cardContent: snapshot.data.schedule);
+                        } else {
+                          return CardWidget(
+                            cardTitle: '📅 이달의 학사일정',
+                            cardContent: '학사일정을 불러오지 못했습니다.',
+                          );
+                        }
+                      }),
                   CardWidget(
                     cardTitle: '🕖 시간표',
                     cardContent: '나만의 시간표를 확인하세요.',
