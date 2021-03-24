@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   http:
   intl:
+  flutter_barcode_scanner: ^1.0.2
 
 
   # The following adds the Cupertino Icons font to your application.
