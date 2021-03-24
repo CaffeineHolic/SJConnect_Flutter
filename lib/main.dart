@@ -214,76 +214,78 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Color(0xfff2f2f2),
       appBar: EmptyAppBar(),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              padding: EdgeInsets.all(18.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Container(
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 28),
-                    child: (Text(
-                      '점심도 맛있게 먹었겠다\n열심히 공부해봐요!',
-                      style: TextStyle(fontSize: 28),
-                    )),
-                  ),
-                  CardWidget(
-                    cardTitle: '전자학생증',
-                    cardContent: '전자학생증을 사용해보세요!',
-                    color: Color(0xFFD6EAF8),
-                  ),
-                  FutureBuilder(
-                      future: meal,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return CardWidget(
-                              cardTitle: snapshot.data.mealName,
-                              cardContent: snapshot.data.meal);
-                        } else if (snapshot.hasError) {
-                          return CardWidget(
-                              cardTitle: '오늘의 급식',
-                              cardContent: '급식을 불러오지 못했습니다.');
-                        }
-                        return CircularProgressIndicator();
-                      }),
-                  FutureBuilder(
-                      future: schedule,
-                      builder: (context, snapshot) {
-                        if (snapshot.hasData) {
-                          return CardWidget(
+      body: SingleChildScrollView(
+        child: Center(
+          // Center is a layout widget. It takes a single child and positions it
+          // in the middle of the parent.
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: EdgeInsets.all(18.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Container(
+                      margin: EdgeInsets.fromLTRB(0, 10, 0, 28),
+                      child: (Text(
+                        '점심도 맛있게 먹었겠다\n열심히 공부해봐요!',
+                        style: TextStyle(fontSize: 28),
+                      )),
+                    ),
+                    CardWidget(
+                      cardTitle: '전자학생증',
+                      cardContent: '전자학생증을 사용해보세요!',
+                      color: Color(0xFFD6EAF8),
+                    ),
+                    FutureBuilder(
+                        future: meal,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CardWidget(
+                                cardTitle: snapshot.data.mealName,
+                                cardContent: snapshot.data.meal);
+                          } else if (snapshot.hasError) {
+                            return CardWidget(
+                                cardTitle: '오늘의 급식',
+                                cardContent: '급식을 불러오지 못했습니다.');
+                          }
+                          return CircularProgressIndicator();
+                        }),
+                    FutureBuilder(
+                        future: schedule,
+                        builder: (context, snapshot) {
+                          if (snapshot.hasData) {
+                            return CardWidget(
+                                cardTitle: '📅 이달의 학사일정',
+                                cardContent: snapshot.data.schedule);
+                          } else {
+                            return CardWidget(
                               cardTitle: '📅 이달의 학사일정',
-                              cardContent: snapshot.data.schedule);
-                        } else {
-                          return CardWidget(
-                            cardTitle: '📅 이달의 학사일정',
-                            cardContent: '학사일정을 불러오지 못했습니다.',
-                          );
-                        }
-                      }),
-                  CardWidget(
-                    cardTitle: '🕖 시간표',
-                    cardContent: '나만의 시간표를 확인하세요.',
-                  ),
-                  CardWidget(
-                    cardTitle: '☑️ 코로나 19 자가진단',
-                    cardContent: '등교하기 전, 자가진단 했나요?',
-                  ),
-                  CardWidget(
-                    cardTitle: '💳 H4Pay',
-                    cardContent: '매점 온라인 결제 및 예약 서비스',
-                  )
-                ],
-              ),
-            )
-          ],
+                              cardContent: '학사일정을 불러오지 못했습니다.',
+                            );
+                          }
+                        }),
+                    CardWidget(
+                      cardTitle: '🕖 시간표',
+                      cardContent: '나만의 시간표를 확인하세요.',
+                    ),
+                    CardWidget(
+                      cardTitle: '☑️ 코로나 19 자가진단',
+                      cardContent: '등교하기 전, 자가진단 했나요?',
+                    ),
+                    CardWidget(
+                      cardTitle: '💳 H4Pay',
+                      cardContent: '매점 온라인 결제 및 예약 서비스',
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
