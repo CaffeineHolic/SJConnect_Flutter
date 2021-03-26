@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:http/http.dart' as http;
 
@@ -48,11 +49,21 @@ Future<Meal> fetchMeal() async {
   } else if (now.hour >= 0 && now.hour < 9) {
     mealCode = 1;
   }
+
+  debugPrint(
+      "https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=M10&MMEAL_SC_CODE=$mealCode&SD_SCHUL_CODE=8000376&Type=json&KEY=76ebe67f34c44b7ba5c10ac9f3b4060e&MLSV_FROM_YMD=$formatted&MLSV_TO_YMD=$formatted");
+
   final res = await http.get(Uri.parse(
       "https://open.neis.go.kr/hub/mealServiceDietInfo?ATPT_OFCDC_SC_CODE=M10&MMEAL_SC_CODE=$mealCode&SD_SCHUL_CODE=8000376&Type=json&KEY=76ebe67f34c44b7ba5c10ac9f3b4060e&MLSV_FROM_YMD=$formatted&MLSV_TO_YMD=$formatted"));
   if (res.statusCode == 200) {
-    return Meal.fromJson(
-        json.decode(res.body)['mealServiceDietInfo'][1]['row'][0]);
+    var jsonBody = json.decode(res.body);
+
+    if (jsonBody["RESULT"]["CODE"] == 'INFO-000') {
+      return Meal.fromJson(
+          json.decode(res.body)['mealServiceDietInfo'][1]['row'][0]);
+    } else if (jsonBody["RESULT"]["CODE"] == 'INFO-200') {
+      return Meal(meal: '급식이 없는 것 같아요 :(', mealName: "오늘의 급식");
+    }
   } else {
     throw Exception('Failed..;');
   }

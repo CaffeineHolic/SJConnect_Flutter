@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sjconnect/tools/emptyappbar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
+import 'components/card.dart';
+import 'tools/dialogs.dart';
 
 void main() {
   runApp(MyApp());
@@ -20,58 +21,6 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
-  }
-}
-
-class CardWidget extends StatefulWidget {
-  final String cardTitle;
-  final String cardContent;
-  final Color color;
-  final onClick;
-
-  const CardWidget(
-      {Key key,
-      @required this.cardTitle,
-      @required this.cardContent,
-      this.onClick,
-      this.color = Colors.white})
-      : super(key: key);
-
-  _CardWidgetState createState() => _CardWidgetState();
-}
-
-class _CardWidgetState extends State<CardWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              border: Border.all(width: 1, color: Color(0xffd6d6d6)),
-              borderRadius: BorderRadius.all(Radius.circular(8)),
-              color: widget.color),
-          padding: EdgeInsets.all(18),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Text(
-                  widget.cardTitle,
-                  style: TextStyle(fontSize: 18),
-                ),
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
-              ),
-              Text(
-                widget.cardContent,
-                style: TextStyle(
-                    fontSize: 15, color: Color(0xff909090), height: 1.15),
-              ),
-            ],
-          ),
-        ),
-        onTap: widget.onClick);
   }
 }
 
@@ -110,28 +59,27 @@ class _MyHomePageState extends State<MyHomePage> {
     prefs.setString("IdCode", barcodeRes);
   }
 
-  void _showDialog(String title, String content, okEvent) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text(title),
-            content: Text(content),
-            actions: [
-              new TextButton(
-                onPressed: okEvent,
-                child: Text("확인"),
-              )
-            ],
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Color(0xfff2f2f2),
-      appBar: EmptyAppBar(),
+      appBar: AppBar(
+        toolbarHeight: 70,
+        shadowColor: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.notifications),
+            onPressed: null,
+            iconSize: 30,
+          ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: null,
+            iconSize: 30,
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -142,41 +90,65 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(18.0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
                     Container(
-                      margin: EdgeInsets.fromLTRB(0, 10, 0, 28),
-                      child: (Text(
-                        '점심도 맛있게 먹었겠다\n열심히 공부해봐요!',
-                        style: TextStyle(fontSize: 28),
-                      )),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Image.asset(
+                                "assets/profile.png",
+                                width: 50,
+                              ),
+                              Container(
+                                margin: EdgeInsets.only(left: 20),
+                                child: Text(
+                                  '이상설',
+                                  style: TextStyle(fontSize: 28),
+                                ),
+                              )
+                            ],
+                          ),
+                          ElevatedButton(
+                            child: Text("전자학생증"),
+                            onPressed: () {
+                              if (prefs.getString('IdCode') == null) {
+                                okOnlyDialog(context, "학생증 등록",
+                                    "학생증이 등록되어 있지 않습니다.\n등록 절차를 진행합니다.",
+                                    () async {
+                                  final barcodeRes =
+                                      await FlutterBarcodeScanner.scanBarcode(
+                                          "#000000",
+                                          '취소',
+                                          true,
+                                          ScanMode.BARCODE);
+                                  saveBarcode(barcodeRes);
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => IdCardPage()));
+                                });
+                              } else {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => IdCardPage()));
+                              }
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                    CardWidget(
-                      cardTitle: '전자학생증',
-                      cardContent: '전자학생증을 사용해보세요!',
-                      color: Color(0xFFD6EAF8),
-                      onClick: () async {
-                        if (prefs.getString('IdCode') == null) {
-                          _showDialog(
-                              "학생증 등록", "학생증이 등록되어 있지 않습니다.\n등록 절차를 진행합니다.",
-                              () async {
-                            final barcodeRes =
-                                await FlutterBarcodeScanner.scanBarcode(
-                                    "#000000", '취소', true, ScanMode.BARCODE);
-                            saveBarcode(barcodeRes);
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => IdCardPage()));
-                          });
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => IdCardPage()));
-                        }
-                      },
+                    Divider(
+                      height: 50,
+                      thickness: 0.8,
+                      indent: 10,
+                      endIndent: 10,
                     ),
                     FutureBuilder(
                         future: meal,
