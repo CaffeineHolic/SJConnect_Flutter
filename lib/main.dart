@@ -45,10 +45,14 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     meal = fetchMeal();
     schedule = fetchSchedule();
-    setupPref().then((value) {
-      prefs = value;
-      debugPrint(prefs.getString('IdCode'));
-    });
+    setupPref().then(
+      (value) {
+        prefs = value;
+        debugPrint(
+          prefs.getString('IdCode'),
+        );
+      },
+    );
   }
 
   Future<SharedPreferences> setupPref() async {
@@ -64,6 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       backgroundColor: Color(0xfff2f2f2),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         toolbarHeight: 70,
         shadowColor: Colors.transparent,
         backgroundColor: Colors.transparent,
@@ -114,33 +119,46 @@ class _MyHomePageState extends State<MyHomePage> {
                               )
                             ],
                           ),
-                          ElevatedButton(
-                            child: Text("전자학생증"),
-                            onPressed: () {
-                              if (prefs.getString('IdCode') == null) {
-                                okOnlyDialog(context, "학생증 등록",
+                          Builder(
+                            builder: (context) => ElevatedButton(
+                              child: Text("전자학생증"),
+                              onPressed: () {
+                                if (prefs.getString('IdCode') == null) {
+                                  okOnlyDialog(
+                                    context,
+                                    "학생증 등록",
                                     "학생증이 등록되어 있지 않습니다.\n등록 절차를 진행합니다.",
                                     () async {
-                                  final barcodeRes =
-                                      await FlutterBarcodeScanner.scanBarcode(
-                                          "#000000",
-                                          '취소',
-                                          true,
-                                          ScanMode.BARCODE);
-                                  saveBarcode(barcodeRes);
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => IdCardPage()));
-                                });
-                              } else {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => IdCardPage()));
-                              }
-                            },
-                          )
+                                      final barcodeRes =
+                                          await FlutterBarcodeScanner
+                                              .scanBarcode("#000000", '취소',
+                                                  true, ScanMode.BARCODE);
+                                      saveBarcode(barcodeRes);
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => IdCardPage(),
+                                        ),
+                                      );
+                                    },
+                                  );
+                                } else {
+                                  showBottomSheet(
+                                      context: context,
+                                      builder: (context) => Container(
+                                            child: IdCardPage(),
+                                          ),
+                                      backgroundColor: Colors.transparent);
+                                  /*Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => IdCardPage(),
+                                  ),
+                                );*/
+                                }
+                              },
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -151,33 +169,35 @@ class _MyHomePageState extends State<MyHomePage> {
                       endIndent: 10,
                     ),
                     FutureBuilder(
-                        future: meal,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return CardWidget(
-                                cardTitle: snapshot.data.mealName,
-                                cardContent: snapshot.data.meal);
-                          } else if (snapshot.hasError) {
-                            return CardWidget(
-                                cardTitle: '오늘의 급식',
-                                cardContent: '급식을 불러오지 못했습니다.');
-                          }
-                          return CircularProgressIndicator();
-                        }),
+                      future: meal,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return CardWidget(
+                              cardTitle: snapshot.data.mealName,
+                              cardContent: snapshot.data.meal);
+                        } else if (snapshot.hasError) {
+                          return CardWidget(
+                              cardTitle: '오늘의 급식',
+                              cardContent: '급식을 불러오지 못했습니다.');
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    ),
                     FutureBuilder(
-                        future: schedule,
-                        builder: (context, snapshot) {
-                          if (snapshot.hasData) {
-                            return CardWidget(
-                                cardTitle: '📅 이달의 학사일정',
-                                cardContent: snapshot.data.schedule);
-                          } else {
-                            return CardWidget(
+                      future: schedule,
+                      builder: (context, snapshot) {
+                        if (snapshot.hasData) {
+                          return CardWidget(
                               cardTitle: '📅 이달의 학사일정',
-                              cardContent: '학사일정을 불러오지 못했습니다.',
-                            );
-                          }
-                        }),
+                              cardContent: snapshot.data.schedule);
+                        } else {
+                          return CardWidget(
+                            cardTitle: '📅 이달의 학사일정',
+                            cardContent: '학사일정을 불러오지 못했습니다.',
+                          );
+                        }
+                      },
+                    ),
                     CardWidget(
                       cardTitle: '🕖 시간표',
                       cardContent: '나만의 시간표를 확인하세요.',
@@ -192,7 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),

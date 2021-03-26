@@ -29,37 +29,58 @@ class IdCardPageState extends State<IdCardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff2f2f2),
+      backgroundColor: Colors.transparent,
       appBar: AppBar(
-        leading: BackButton(
-          color: Colors.black,
+        centerTitle: true,
+        backgroundColor: Colors.grey[300],
+        shadowColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        shape: ContinuousRectangleBorder(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(40),
+            topRight: Radius.circular(40),
+          ),
         ),
-        title: Text(
-          "전자학생증",
-          style: TextStyle(color: Colors.black),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 100,
+              height: 5,
+              decoration: BoxDecoration(
+                color: Colors.grey,
+                border: Border.all(width: 1, color: Colors.grey),
+                borderRadius: BorderRadius.all(Radius.circular(38)),
+              ),
+            ),
+          ],
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit),
-            color: Colors.black,
+            icon: Icon(Icons.edit, color: Colors.black),
             onPressed: () {
-              okOnlyDialog(context, "학생증 등록", "학생증이 등록되어 있습니다. 변경 절차를 시작합니다.",
-                  () {
-                FlutterBarcodeScanner.scanBarcode(
-                        "#000000", '취소', true, ScanMode.BARCODE)
-                    .then((value) {
-                  prefs.setString("IdCode", value);
-                  loadIdCode();
-                  Navigator.pop(context);
-                });
-              });
+              okOnlyDialog(
+                context,
+                "학생증 등록",
+                "학생증이 등록되어 있습니다. 변경 절차를 시작합니다.",
+                () {
+                  FlutterBarcodeScanner.scanBarcode(
+                          "#000000", '취소', true, ScanMode.BARCODE)
+                      .then(
+                    (value) {
+                      prefs.setString("IdCode", value);
+                      loadIdCode();
+                      Navigator.pop(context);
+                    },
+                  );
+                },
+              );
             },
           ),
         ],
-        backgroundColor: Colors.transparent,
-        shadowColor: Colors.transparent,
       ),
       body: Container(
+        decoration: BoxDecoration(color: Colors.grey[200]),
         padding: EdgeInsets.all(2.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
