@@ -165,6 +165,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 await FlutterBarcodeScanner.scanBarcode(
                                     "#000000", '취소', true, ScanMode.BARCODE);
                             saveBarcode(barcodeRes);
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => IdCardPage()));
                           });
                         } else {
                           Navigator.push(
