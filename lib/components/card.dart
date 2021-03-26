@@ -3,16 +3,14 @@ import 'package:flutter/material.dart';
 class CardWidget extends StatefulWidget {
   final String cardTitle;
   final String cardContent;
-  final Color color;
   final onClick;
 
-  const CardWidget(
-      {Key key,
-      @required this.cardTitle,
-      @required this.cardContent,
-      this.onClick,
-      this.color = Colors.white})
-      : super(key: key);
+  const CardWidget({
+    Key key,
+    @required this.cardTitle,
+    @required this.cardContent,
+    this.onClick,
+  }) : super(key: key);
 
   _CardWidgetState createState() => _CardWidgetState();
 }
@@ -26,7 +24,7 @@ class _CardWidgetState extends State<CardWidget> {
           width: double.infinity,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: widget.color),
+              color: Theme.of(context).highlightColor),
           padding: EdgeInsets.all(18),
           child: Column(
             mainAxisSize: MainAxisSize.max,
@@ -41,8 +39,7 @@ class _CardWidgetState extends State<CardWidget> {
               ),
               Text(
                 widget.cardContent,
-                style: TextStyle(
-                    fontSize: 15, color: Color(0xff909090), height: 1.15),
+                style: Theme.of(context).textTheme.subtitle1,
               ),
             ],
           ),

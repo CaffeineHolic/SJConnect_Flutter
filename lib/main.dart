@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/idcard.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
@@ -17,8 +18,64 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        brightness: Brightness.light,
+        primaryColor: Color(0xfff2f2f2),
+        accentColor: Colors.black,
+        cardColor: Colors.grey[300],
+        focusColor: Colors.grey[200],
+        highlightColor: Colors.white,
+        iconTheme: IconThemeData(
+          color: Colors.black,
+        ),
+        textTheme: TextTheme(
+          subtitle1: TextStyle(
+            // 카드 서브텍스트
+            fontSize: 15,
+            color: Color(0xff909090),
+            height: 1.15,
+          ),
+          subtitle2: TextStyle(
+            // 학생증 생년월일
+            fontSize: 15,
+            color: Colors.black,
+          ),
+          headline4: TextStyle(
+            // 학생증 이름
+            fontSize: 30,
+            color: Colors.black,
+          ),
+        ),
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        primaryColor: Colors.grey[900],
+        accentColor: Colors.grey[300],
+        cardColor: Colors.grey[850],
+        focusColor: Colors.grey[800],
+        highlightColor: Colors.grey[800],
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        textTheme: TextTheme(
+          subtitle1: TextStyle(
+            // 카드 서브텍스트
+            fontSize: 15,
+            color: Color(0xffababab),
+            height: 1.15,
+          ),
+          subtitle2: TextStyle(
+            // 학생증 생년월일
+            fontSize: 15,
+            color: Colors.black,
+          ),
+          headline4: TextStyle(
+            // 학생증 이름
+            fontSize: 30,
+            color: Colors.black,
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.system,
       home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -66,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xfff2f2f2),
+      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 70,
@@ -74,12 +131,18 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: Icon(
+              Icons.notifications,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: null,
             iconSize: 30,
           ),
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(
+              Icons.settings,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: null,
             iconSize: 30,
           ),
@@ -106,9 +169,11 @@ class _MyHomePageState extends State<MyHomePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Image.asset(
-                                "assets/profile.png",
+                              SvgPicture.asset(
+                                "assets/profile.svg",
                                 width: 50,
+                                height: 50,
+                                color: Theme.of(context).accentColor,
                               ),
                               Container(
                                 margin: EdgeInsets.only(left: 20),
@@ -204,7 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     CardWidget(
                       cardTitle: '☑️ 코로나 19 자가진단',
-                      cardContent: '등교하기 전, 자가진단 했나요?',
+                      cardContent: '등교하기 전, 자가진단은 하셨나요?',
                     ),
                     CardWidget(
                       cardTitle: '💳 H4Pay',

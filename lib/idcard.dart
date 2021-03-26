@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_flutter/barcode_flutter.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'tools/dialogs.dart';
 
 class IdCardPage extends StatefulWidget {
@@ -32,7 +33,7 @@ class IdCardPageState extends State<IdCardPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Colors.grey[300],
+        backgroundColor: Theme.of(context).cardColor,
         shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         shape: ContinuousRectangleBorder(
@@ -57,7 +58,10 @@ class IdCardPageState extends State<IdCardPage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.edit, color: Colors.black),
+            icon: Icon(
+              Icons.edit,
+              color: Theme.of(context).iconTheme.color,
+            ),
             onPressed: () {
               okOnlyDialog(
                 context,
@@ -80,7 +84,7 @@ class IdCardPageState extends State<IdCardPage> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(color: Colors.grey[200]),
+        decoration: BoxDecoration(color: Theme.of(context).focusColor),
         padding: EdgeInsets.all(2.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -103,17 +107,18 @@ class IdCardPageState extends State<IdCardPage> {
                           children: [
                             Text(
                               "이상설",
-                              style: TextStyle(fontSize: 30),
+                              style: Theme.of(context).textTheme.headline4,
                             ),
                             Text(
                               "1871년 1월 27일",
-                              style: TextStyle(fontSize: 15),
+                              style: Theme.of(context).textTheme.subtitle2,
                             )
                           ],
                         ),
-                        Image.asset(
-                          "assets/profile.png",
+                        SvgPicture.asset(
+                          "assets/profile.svg",
                           width: 60,
+                          height: 60,
                         )
                       ],
                     ),
@@ -140,7 +145,7 @@ class IdCardPageState extends State<IdCardPage> {
             ),
             Container(
               child: Text(
-                "전자학생증은 교내 도서관 및 석식 인증 등 교내 전용으로만 사용가능합니다. 실물 학생증의 교통/체크/현금카드의 기능은 제공하지 않습니다.",
+                "전자학생증은 교내 도서관 도서 대출·반납, 석식 인증 등 교내 전용으로만 사용 가능합니다. 실물 학생증의 교통·체크·현금카드 기능은 제공하지 않습니다.",
                 textAlign: TextAlign.center,
               ),
               padding: EdgeInsets.all(10.0),
