@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/idcard.dart';
+import 'package:sjconnect/settings.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
 import 'components/card.dart';
@@ -143,7 +144,14 @@ class _MyHomePageState extends State<MyHomePage> {
               Icons.settings,
               color: Theme.of(context).iconTheme.color,
             ),
-            onPressed: null,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SettingsPage(),
+                ),
+              );
+            },
             iconSize: 30,
           ),
         ],
@@ -196,30 +204,31 @@ class _MyHomePageState extends State<MyHomePage> {
                                     () async {
                                       final barcodeRes =
                                           await FlutterBarcodeScanner
-                                              .scanBarcode("#000000", '취소',
-                                                  true, ScanMode.BARCODE);
+                                              .scanBarcode(
+                                        "#000000",
+                                        '취소',
+                                        true,
+                                        ScanMode.BARCODE,
+                                      );
                                       saveBarcode(barcodeRes);
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => IdCardPage(),
+                                      Navigator.pop(context);
+                                      showBottomSheet(
+                                        context: context,
+                                        builder: (context) => Container(
+                                          child: IdCardPage(),
                                         ),
+                                        backgroundColor: Colors.transparent,
                                       );
                                     },
                                   );
                                 } else {
                                   showBottomSheet(
-                                      context: context,
-                                      builder: (context) => Container(
-                                            child: IdCardPage(),
-                                          ),
-                                      backgroundColor: Colors.transparent);
-                                  /*Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => IdCardPage(),
-                                  ),
-                                );*/
+                                    context: context,
+                                    builder: (context) => Container(
+                                      child: IdCardPage(),
+                                    ),
+                                    backgroundColor: Colors.transparent,
+                                  );
                                 }
                               },
                             ),
