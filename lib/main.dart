@@ -3,11 +3,13 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
+import 'package:intl/date_symbol_data_local.dart' as locale;
 
 void main() {
   runApp(MyApp());
@@ -94,14 +96,14 @@ final now = DateTime.now();
 final formatter = DateFormat('yyyyMMdd');
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Meal> meal;
-  Future<Schedule> schedule;
+  Future<List<Meal>> meal;
+  Future<List<Schedule>> schedule;
   SharedPreferences prefs;
   @override
   void initState() {
     super.initState();
-    meal = fetchMeal();
-    schedule = fetchSchedule();
+    meal = fetchMeals();
+    schedule = fetchSchedules();
     setupPref().then(
       (value) {
         prefs = value;
@@ -237,10 +239,44 @@ class _MyHomePageState extends State<MyHomePage> {
                       future: meal,
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
+                          var mealTitle;
+                          var meal;
+                          if (now.hour >= 0 && now.hour < 9) {
+                            mealTitle = '오늘의 조식';
+                            meal = snapshot.data[now.day - 1].breakfast;
+                          } else if (now.hour >= 9 && now.hour < 14) {
+                            mealTitle = '오늘의 중식';
+                            meal = snapshot.data[now.day - 1].lunch;
+                          } else if (now.hour >= 14 && now.hour < 20) {
+                            mealTitle = '오늘의 석식';
+                            meal = snapshot.data[now.day - 1].dinner;
+                          } else if (now.hour >= 20 && now.hour <= 24) {
+                            mealTitle = '내일의 조식';
+                            meal = snapshot.data[now.day].breakfast;
+                          }
                           return CardWidget(
-                              cardTitle: snapshot.data.mealName,
-                              cardContent: snapshot.data.meal);
+                            cardTitle: mealTitle,
+                            cardContent: meal.toString(),
+                            onClick: () {
+                              locale.initializeDateFormatting().then(
+                                (value) {
+                                  fetchMeals().then(
+                                    (meals) => {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              MealCalendar(meal: meals),
+                                        ),
+                                      )
+                                    },
+                                  );
+                                },
+                              );
+                            },
+                          );
                         } else if (snapshot.hasError) {
+                          debugPrint(snapshot.error.toString());
                           return CardWidget(
                               cardTitle: '오늘의 급식',
                               cardContent: '급식을 불러오지 못했습니다.');
@@ -253,11 +289,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CardWidget(
-                              cardTitle: '📅 이달의 학사일정',
-                              cardContent: snapshot.data.schedule);
+                              cardTitle: '📅 오늘의 학사일정',
+                              cardContent: snapshot.data[now.day - 1].schedule);
                         } else {
                           return CardWidget(
-                            cardTitle: '📅 이달의 학사일정',
+                            cardTitle: '📅 오늘의 학사일정',
                             cardContent: '학사일정을 불러오지 못했습니다.',
                           );
                         }
