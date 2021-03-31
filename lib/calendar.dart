@@ -55,8 +55,26 @@ class MealCalendarState extends State<MealCalendar> {
             onDaySelected: _onDaySelected,
           ),
           Container(
-            child: Text(selectedMeal),
-          )
+            //selectedMeal
+            child: Container(
+              margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+              padding: EdgeInsets.all(18),
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(25)),
+                color: Theme.of(context).highlightColor,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Text(selectedMeal),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(

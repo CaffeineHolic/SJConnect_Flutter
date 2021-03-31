@@ -19,32 +19,33 @@ class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-        child: Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: Theme.of(context).highlightColor),
-          padding: EdgeInsets.all(18),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Text(
-                  widget.cardTitle,
-                  style: TextStyle(fontSize: 18),
-                ),
-                margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
+      child: Container(
+        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+        width: double.infinity,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.all(Radius.circular(25)),
+            color: Theme.of(context).highlightColor),
+        padding: EdgeInsets.all(18),
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              child: Text(
+                widget.cardTitle,
+                style: TextStyle(fontSize: 18),
               ),
-              Text(
-                widget.cardContent,
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-            ],
-          ),
+              margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
+            ),
+            Text(
+              widget.cardContent,
+              style: Theme.of(context).textTheme.subtitle1,
+            ),
+          ],
         ),
-        onTap: widget.onClick);
+      ),
+      onTap: widget.onClick,
+    );
   }
 }
 
