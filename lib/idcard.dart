@@ -81,6 +81,18 @@ class IdCardPageState extends State<IdCardPage> {
               );
             },
           ),
+          /*PopupMenuItem(
+            child: IconButton(
+              icon: Icon(
+                Icons.remove_circle_outline,
+                color: Theme.of(context).iconTheme.color,
+              ),
+              onPressed: () {
+                prefs.remove("IdCode");
+                Navigator.pop(context);
+              },
+            ),
+          ),*/
         ],
       ),
       body: Container(
