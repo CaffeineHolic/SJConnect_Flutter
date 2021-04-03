@@ -23,6 +23,7 @@ class MealCalendarState extends State<MealCalendar> {
   @override
   void initState() {
     super.initState();
+    currentIdx = 0;
     now = DateTime.now();
     _mealFuture = fetchMeals();
     selectedMeal = "급식을 불러오는 중입니다.";
