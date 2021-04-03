@@ -1,30 +1,32 @@
+//TODO: 다른 달 선택 구현
 import 'package:flutter/material.dart';
 import 'package:sjconnect/NEIS/meal/meal.dart';
+import 'package:sjconnect/components/card.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MealCalendar extends StatefulWidget {
-  final meal;
-
-  const MealCalendar({Key key, this.meal}) : super(key: key);
   @override
-  State<StatefulWidget> createState() => MealCalendarState(meal: meal);
+  State<StatefulWidget> createState() => MealCalendarState();
 }
 
 class MealCalendarState extends State<MealCalendar> {
   CalendarController calendarController;
   String locale;
   String selectedMeal;
-  DateTime selectedDay;
-
-  final meal;
-  MealCalendarState({this.meal});
+  int selectedDay;
+  int currentIdx;
+  DateTime now;
+  Future<List<Meal>> _mealFuture;
+  List<Meal> meals;
+  List<bool> mealValid = [false, false, false];
 
   @override
   void initState() {
+    super.initState();
+    now = DateTime.now();
+    _mealFuture = fetchMeals();
+    selectedMeal = "급식을 불러오는 중입니다.";
     calendarController = CalendarController();
-    setState(() {
-      selectedMeal = meal[now.day - 1].breakfast;
-    });
   }
 
   @override
@@ -33,12 +35,20 @@ class MealCalendarState extends State<MealCalendar> {
     super.dispose();
   }
 
-  void _onDaySelected(DateTime day, List events, List holidays) {
-    setState(() {
-      selectedDay = day;
-      selectedMeal = meal[day.day - 1].breakfast;
-    });
-  }
+  void _onDaySelected(DateTime date, List events, List holidays) => setState(
+        () {
+          selectedDay = date.day;
+          selectedMeal = meals[date.day - 1].breakfast;
+          mealValid = [false, false, false];
+          if (meals[date.day - 1].breakfast != '급식이 없는 것 같아요 :(') {
+            mealValid[0] = true;
+          } else if (meals[date.day - 1].lunch != '급식이 없는 것 같아요 :(') {
+            mealValid[1] = true;
+          } else if (meals[date.day - 1].dinner != '급식이 없는 것 같아요 :(') {
+            mealValid[2] = true;
+          }
+        },
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +64,52 @@ class MealCalendarState extends State<MealCalendar> {
             events: {},
             onDaySelected: _onDaySelected,
           ),
+          FutureBuilder(
+            future: _mealFuture,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                meals = snapshot.data;
+                selectedMeal = snapshot.data[DateTime.now().day - 1].breakfast;
+                return Container();
+              }
+              return CircularProgressIndicator();
+            },
+          ),
           Container(
             child: Text(selectedMeal),
-          )
+          ),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        currentIndex: currentIdx,
+        selectedItemColor: Theme.of(context).highlightColor,
+        unselectedItemColor: Theme.of(context).accentColor,
+        onTap: (selectedIdx) => setState(
+          () {
+            debugPrint(selectedDay.toString());
+            currentIdx = selectedIdx;
+
+            switch (selectedIdx) {
+              case 0:
+                selectedMeal = meals[selectedDay - 1].breakfast;
+                break;
+              case 1:
+                selectedMeal = meals[selectedDay - 1].lunch;
+                break;
+              case 2:
+                selectedMeal = meals[selectedDay - 1].dinner;
+                break;
+            }
+          },
+        ),
         items: [
-          BottomNavigationBarItem(icon: Icon(Icons.wb_sunny), label: "조식"),
+          BottomNavigationBarItem(
+            backgroundColor: Colors.blue,
+            icon: Icon(
+              Icons.brightness_7_sharp,
+            ),
+            label: "조식",
+          ),
           BottomNavigationBarItem(
               icon: Icon(Icons.brightness_6_sharp), label: "중식"),
           BottomNavigationBarItem(icon: Icon(Icons.brightness_2), label: "석식"),

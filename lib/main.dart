@@ -12,7 +12,8 @@ import 'components/card.dart';
 import 'tools/dialogs.dart';
 import 'package:intl/date_symbol_data_local.dart' as locale;
 
-void main() {
+void main() async {
+  await locale.initializeDateFormatting();
   runApp(MyApp());
 }
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
         cardColor: Colors.grey[300],
         focusColor: Colors.grey[200],
-        highlightColor: Colors.white,
+        highlightColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.grey[300],
         cardColor: Colors.grey[850],
         focusColor: Colors.grey[800],
-        highlightColor: Colors.grey[800],
+        highlightColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
@@ -249,38 +250,29 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           var mealTitle;
-                          var meal;
+                          var mealContent;
                           if (now.hour >= 0 && now.hour < 9) {
                             mealTitle = '오늘의 조식';
-                            meal = snapshot.data[now.day - 1].breakfast;
+                            mealContent = snapshot.data[now.day - 1].breakfast;
                           } else if (now.hour >= 9 && now.hour < 14) {
                             mealTitle = '오늘의 중식';
-                            meal = snapshot.data[now.day - 1].lunch;
+                            mealContent = snapshot.data[now.day - 1].lunch;
                           } else if (now.hour >= 14 && now.hour < 20) {
                             mealTitle = '오늘의 석식';
-                            meal = snapshot.data[now.day - 1].dinner;
+                            mealContent = snapshot.data[now.day - 1].dinner;
                           } else if (now.hour >= 20 && now.hour <= 24) {
                             mealTitle = '내일의 조식';
-                            meal = snapshot.data[now.day].breakfast;
+                            mealContent = snapshot.data[now.day].breakfast;
                           }
                           return CardWidget(
                             cardTitle: mealTitle,
-                            cardContent: meal.toString(),
+                            cardContent: mealContent,
                             onClick: () {
-                              locale.initializeDateFormatting().then(
-                                (value) {
-                                  fetchMeals().then(
-                                    (meals) => {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              MealCalendar(meal: meals),
-                                        ),
-                                      )
-                                    },
-                                  );
-                                },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MealCalendar(),
+                                ),
                               );
                             },
                           );
