@@ -18,14 +18,20 @@ class CardWidget extends StatefulWidget {
 class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return Card(
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(25),
+        ),
+      ),
+      color: Theme.of(context).highlightColor,
+      child: InkWell(
+        onTap: widget.onClick,
+        borderRadius: BorderRadius.all(Radius.circular(25)),
         child: Container(
-          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-          width: double.infinity,
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: Theme.of(context).highlightColor),
           padding: EdgeInsets.all(18),
+          width: double.infinity,
           child: Column(
             mainAxisSize: MainAxisSize.max,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,7 +50,8 @@ class _CardWidgetState extends State<CardWidget> {
             ],
           ),
         ),
-        onTap: widget.onClick);
+      ),
+    );
   }
 }
 

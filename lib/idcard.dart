@@ -44,6 +44,7 @@ class IdCardPageState extends State<IdCardPage> {
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 100,
@@ -72,8 +73,10 @@ class IdCardPageState extends State<IdCardPage> {
                           "#000000", '취소', true, ScanMode.BARCODE)
                       .then(
                     (value) {
-                      prefs.setString("IdCode", value);
-                      loadIdCode();
+                      if (value != '-1') {
+                        prefs.setString("IdCode", value);
+                        loadIdCode();
+                      }
                       Navigator.pop(context);
                     },
                   );

@@ -6,11 +6,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/settings.dart';
+import 'package:sjconnect/timetable.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
 import 'package:intl/date_symbol_data_local.dart' as locale;
+import 'package:url_launcher/url_launcher.dart';
 
 void main() async {
   await locale.initializeDateFormatting();
@@ -27,7 +29,8 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
         cardColor: Colors.grey[300],
         focusColor: Colors.grey[200],
-        highlightColor: Colors.lightBlue[600],
+        highlightColor: Colors.white,
+        hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -56,7 +59,8 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.grey[300],
         cardColor: Colors.grey[850],
         focusColor: Colors.grey[800],
-        highlightColor: Colors.lightBlue[600],
+        highlightColor: Colors.grey[800],
+        hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
@@ -120,9 +124,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return await SharedPreferences.getInstance();
   }
 
-  void saveBarcode(String barcodeRes) async {
-    prefs.setString("IdCode", barcodeRes);
-  }
+  void _launchURL(String _url) async => await canLaunch(_url)
+      ? await launch(_url)
+      : throw 'Could not launch $_url';
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +203,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             builder: (context) => ElevatedButton(
                               child: Text("전자학생증"),
                               onPressed: () {
-                                if (prefs.getString('IdCode') == null) {
+                                if (prefs.getString('IdCode') == null ||
+                                    prefs.getString('IdCode') == '-1') {
                                   okOnlyDialog(
                                     context,
                                     "학생증 등록",
@@ -213,15 +218,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                         true,
                                         ScanMode.BARCODE,
                                       );
-                                      saveBarcode(barcodeRes);
+                                      if (barcodeRes != '-1') {
+                                        prefs.setString("IdCode", barcodeRes);
+                                      }
                                       Navigator.pop(context);
-                                      showBottomSheet(
-                                        context: context,
-                                        builder: (context) => Container(
-                                          child: IdCardPage(),
-                                        ),
-                                        backgroundColor: Colors.transparent,
-                                      );
                                     },
                                   );
                                 } else {
@@ -282,7 +282,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               cardTitle: '오늘의 급식',
                               cardContent: '급식을 불러오지 못했습니다.');
                         }
-                        return CircularProgressIndicator();
+                        return CardWidget(
+                          cardTitle: '오늘의 급식',
+                          cardContent: '로딩 중이에요 :)',
+                        );
                       },
                     ),
                     FutureBuilder(
@@ -303,14 +306,28 @@ class _MyHomePageState extends State<MyHomePage> {
                     CardWidget(
                       cardTitle: '🕖 시간표',
                       cardContent: '나만의 시간표를 확인하세요.',
+                      onClick: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TimeTablePage(),
+                          ),
+                        );
+                      },
                     ),
                     CardWidget(
                       cardTitle: '☑️ 코로나 19 자가진단',
                       cardContent: '등교하기 전, 자가진단은 하셨나요?',
+                      onClick: () {
+                        _launchURL('https://hcs.eduro.go.kr');
+                      },
                     ),
                     CardWidget(
                       cardTitle: '💳 H4Pay',
                       cardContent: '매점 온라인 결제 및 예약 서비스',
+                      onClick: () {
+                        _launchURL('https://h4pay.co.kr');
+                      },
                     )
                   ],
                 ),
