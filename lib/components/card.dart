@@ -18,33 +18,39 @@ class CardWidget extends StatefulWidget {
 class _CardWidgetState extends State<CardWidget> {
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      child: Container(
-        margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-        width: double.infinity,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(25)),
-            color: Theme.of(context).highlightColor),
-        padding: EdgeInsets.all(18),
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              child: Text(
-                widget.cardTitle,
-                style: TextStyle(fontSize: 18),
-              ),
-              margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
-            ),
-            Text(
-              widget.cardContent,
-              style: Theme.of(context).textTheme.subtitle1,
-            ),
-          ],
+    return Card(
+      margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(
+          Radius.circular(25),
         ),
       ),
-      onTap: widget.onClick,
+      color: Theme.of(context).highlightColor,
+      child: InkWell(
+        onTap: widget.onClick,
+        borderRadius: BorderRadius.all(Radius.circular(25)),
+        child: Container(
+          padding: EdgeInsets.all(18),
+          width: double.infinity,
+          child: Column(
+            mainAxisSize: MainAxisSize.max,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                child: Text(
+                  widget.cardTitle,
+                  style: TextStyle(fontSize: 18),
+                ),
+                margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
+              ),
+              Text(
+                widget.cardContent,
+                style: Theme.of(context).textTheme.subtitle1,
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

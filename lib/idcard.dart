@@ -44,6 +44,7 @@ class IdCardPageState extends State<IdCardPage> {
         ),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               width: 100,
