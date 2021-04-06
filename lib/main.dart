@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/settings.dart';
-import 'package:sjconnect/timetable.dart';
 import 'NEIS/meal/meal.dart';
 import 'NEIS/schedule/schedule.dart';
 import 'components/card.dart';
@@ -323,14 +322,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     CardWidget(
                       cardTitle: '🕖 시간표',
                       cardContent: '나만의 시간표를 확인하세요.',
-                      onClick: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TimeTablePage(),
-                          ),
-                        );
-                      },
                     ),
                     CardWidget(
                       cardTitle: '☑️ 코로나 19 자가진단',
