@@ -1,31 +1,36 @@
 //TODO: 다른 달 선택 구현
 import 'package:flutter/material.dart';
-import 'package:sjconnect/NEIS/meal/meal.dart';
-import 'package:sjconnect/components/card.dart';
+import 'package:neis_api/meal/meal.dart';
+import 'package:neis_api/school/school.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MealCalendar extends StatefulWidget {
+  final School school;
+
+  MealCalendar(this.school);
+
   @override
-  State<StatefulWidget> createState() => MealCalendarState();
+  State<StatefulWidget> createState() => MealCalendarState(school);
 }
 
 class MealCalendarState extends State<MealCalendar> {
+  final School school;
   CalendarController calendarController;
   String locale;
   String selectedMeal;
   int selectedDay;
   int currentIdx;
   DateTime now;
-  Future<List<Meal>> _mealFuture;
-  List<Meal> meals;
   List<bool> mealValid = [false, false, false];
+  List<Meal> meals;
+
+  MealCalendarState(this.school);
 
   @override
   void initState() {
     super.initState();
     currentIdx = 0;
     now = DateTime.now();
-    _mealFuture = fetchMeals();
     selectedMeal = "급식을 불러오는 중입니다.";
     calendarController = CalendarController();
   }
@@ -66,33 +71,34 @@ class MealCalendarState extends State<MealCalendar> {
             onDaySelected: _onDaySelected,
           ),
           FutureBuilder(
-            future: _mealFuture,
+            future: school.getMonthlyMeal(now.year, now.month),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 meals = snapshot.data;
-                selectedMeal = snapshot.data[DateTime.now().day - 1].breakfast;
-                return Container();
+                selectedDay = now.day;
+                return Container(
+                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  padding: EdgeInsets.all(18),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(25)),
+                    color: Theme.of(context).highlightColor,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        child: Text(selectedMeal == "급식을 불러오는 중입니다."
+                            ? meals[now.day - 1].breakfast
+                            : selectedMeal),
+                      ),
+                    ],
+                  ),
+                );
               }
               return CircularProgressIndicator();
             },
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-            padding: EdgeInsets.all(18),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(25)),
-              color: Theme.of(context).highlightColor,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Text(selectedMeal),
-                ),
-              ],
-            ),
           ),
         ],
       ),
@@ -135,11 +141,17 @@ class MealCalendarState extends State<MealCalendar> {
 }
 
 class ScheduleCalendar extends StatefulWidget {
+  final School school;
+  ScheduleCalendar(this.school);
+
   @override
-  State<StatefulWidget> createState() => ScheduleCalendarState();
+  State<StatefulWidget> createState() => ScheduleCalendarState(school);
 }
 
 class ScheduleCalendarState extends State<ScheduleCalendar> {
+  final School school;
+  ScheduleCalendarState(this.school);
+
   @override
   Widget build(BuildContext context) {
     Scaffold(

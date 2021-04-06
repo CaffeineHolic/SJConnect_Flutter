@@ -7,8 +7,7 @@ import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/settings.dart';
 import 'package:sjconnect/timetable.dart';
-import 'NEIS/meal/meal.dart';
-import 'NEIS/schedule/schedule.dart';
+import 'package:neis_api/school/school.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
 import 'package:intl/date_symbol_data_local.dart' as locale;
@@ -102,14 +101,11 @@ final now = DateTime.now();
 final formatter = DateFormat('yyyyMMdd');
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Meal>> meal;
-  Future<List<Schedule>> schedule;
+  final school = School(Region.CHUNGBUK, '8000376');
   SharedPreferences prefs;
   @override
   void initState() {
     super.initState();
-    meal = fetchMeals();
-    schedule = fetchSchedules();
     setupPref().then(
       (value) {
         prefs = value;
@@ -246,7 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       endIndent: 10,
                     ),
                     FutureBuilder(
-                      future: meal,
+                      future: school.getMonthlyMeal(now.year, now.month),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           var mealTitle;
@@ -271,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MealCalendar(),
+                                  builder: (context) => MealCalendar(school),
                                 ),
                               );
                             },
@@ -289,12 +285,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                     FutureBuilder(
-                      future: schedule,
+                      future: school.getMonthlySchedule(now.year, now.month),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CardWidget(
-                              cardTitle: '📅 오늘의 학사일정',
-                              cardContent: snapshot.data[now.day - 1].schedule);
+                            cardTitle: '📅 오늘의 학사일정',
+                            cardContent: snapshot.data[now.day - 1].schedule,
+                            onClick: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ScheduleCalendar(school),
+                                ),
+                              );
+                            },
+                          );
                         } else {
                           return CardWidget(
                             cardTitle: '📅 오늘의 학사일정',
