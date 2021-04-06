@@ -6,14 +6,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/settings.dart';
-import 'NEIS/meal/meal.dart';
-import 'NEIS/schedule/schedule.dart';
+import 'package:sjconnect/timetable.dart';
+import 'package:neis_api/school/school.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
 import 'package:intl/date_symbol_data_local.dart' as locale;
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
+void main() async {
+  await locale.initializeDateFormatting();
   runApp(MyApp());
 }
 
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         cardColor: Colors.grey[300],
         focusColor: Colors.grey[200],
         highlightColor: Colors.white,
+        hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -57,6 +59,7 @@ class MyApp extends StatelessWidget {
         cardColor: Colors.grey[850],
         focusColor: Colors.grey[800],
         highlightColor: Colors.grey[800],
+        hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
@@ -98,14 +101,11 @@ final now = DateTime.now();
 final formatter = DateFormat('yyyyMMdd');
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<List<Meal>> meal;
-  Future<List<Schedule>> schedule;
+  final school = School(Region.CHUNGBUK, '8000376');
   SharedPreferences prefs;
   @override
   void initState() {
     super.initState();
-    meal = fetchMeals();
-    schedule = fetchSchedules();
     setupPref().then(
       (value) {
         prefs = value;
@@ -118,10 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<SharedPreferences> setupPref() async {
     return await SharedPreferences.getInstance();
-  }
-
-  void saveBarcode(String barcodeRes) async {
-    prefs.setString("IdCode", barcodeRes);
   }
 
   void _launchURL(String _url) async => await canLaunch(_url)
@@ -218,17 +214,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                         true,
                                         ScanMode.BARCODE,
                                       );
-                                      saveBarcode(barcodeRes);
-                                      Navigator.pop(context);
-                                      if (prefs.getString('IdCode') != '-1') {
-                                        showBottomSheet(
-                                          context: context,
-                                          builder: (context) => Container(
-                                            child: IdCardPage(),
-                                          ),
-                                          backgroundColor: Colors.transparent,
-                                        );
+                                      if (barcodeRes != '-1') {
+                                        prefs.setString("IdCode", barcodeRes);
                                       }
+                                      Navigator.pop(context);
                                     },
                                   );
                                 } else {
@@ -253,42 +242,33 @@ class _MyHomePageState extends State<MyHomePage> {
                       endIndent: 10,
                     ),
                     FutureBuilder(
-                      future: meal,
+                      future: school.getMonthlyMeal(now.year, now.month),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           var mealTitle;
-                          var meal;
+                          var mealContent;
                           if (now.hour >= 0 && now.hour < 9) {
                             mealTitle = '오늘의 조식';
-                            meal = snapshot.data[now.day - 1].breakfast;
+                            mealContent = snapshot.data[now.day - 1].breakfast;
                           } else if (now.hour >= 9 && now.hour < 14) {
                             mealTitle = '오늘의 중식';
-                            meal = snapshot.data[now.day - 1].lunch;
+                            mealContent = snapshot.data[now.day - 1].lunch;
                           } else if (now.hour >= 14 && now.hour < 20) {
                             mealTitle = '오늘의 석식';
-                            meal = snapshot.data[now.day - 1].dinner;
+                            mealContent = snapshot.data[now.day - 1].dinner;
                           } else if (now.hour >= 20 && now.hour <= 24) {
                             mealTitle = '내일의 조식';
-                            meal = snapshot.data[now.day].breakfast;
+                            mealContent = snapshot.data[now.day].breakfast;
                           }
                           return CardWidget(
                             cardTitle: mealTitle,
-                            cardContent: meal.toString(),
+                            cardContent: mealContent,
                             onClick: () {
-                              locale.initializeDateFormatting().then(
-                                (value) {
-                                  fetchMeals().then(
-                                    (meals) => {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              MealCalendar(meal: meals),
-                                        ),
-                                      )
-                                    },
-                                  );
-                                },
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => MealCalendar(school),
+                                ),
                               );
                             },
                           );
@@ -305,12 +285,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                     ),
                     FutureBuilder(
-                      future: schedule,
+                      future: school.getMonthlySchedule(now.year, now.month),
                       builder: (context, snapshot) {
                         if (snapshot.hasData) {
                           return CardWidget(
-                              cardTitle: '📅 오늘의 학사일정',
-                              cardContent: snapshot.data[now.day - 1].schedule);
+                            cardTitle: '📅 오늘의 학사일정',
+                            cardContent: snapshot.data[now.day - 1].schedule,
+                            onClick: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ScheduleCalendar(school),
+                                ),
+                              );
+                            },
+                          );
                         } else {
                           return CardWidget(
                             cardTitle: '📅 오늘의 학사일정',
