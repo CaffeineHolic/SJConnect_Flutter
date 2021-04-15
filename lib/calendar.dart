@@ -15,7 +15,6 @@ class MealCalendar extends StatefulWidget {
 
 class MealCalendarState extends State<MealCalendar> {
   final School school;
-  CalendarController calendarController;
   String locale;
   String selectedMeal;
   int selectedDay;
@@ -32,16 +31,14 @@ class MealCalendarState extends State<MealCalendar> {
     currentIdx = 0;
     now = DateTime.now();
     selectedMeal = "급식을 불러오는 중입니다.";
-    calendarController = CalendarController();
   }
 
   @override
   void dispose() {
-    calendarController.dispose();
     super.dispose();
   }
 
-  void _onDaySelected(DateTime date, List events, List holidays) => setState(
+  void _onDaySelected(DateTime date, DateTime focusedDay) => setState(
         () {
           selectedDay = date.day;
           selectedMeal = meals[date.day - 1].breakfast;
@@ -65,9 +62,8 @@ class MealCalendarState extends State<MealCalendar> {
       body: Column(
         children: [
           TableCalendar(
-            calendarController: calendarController,
             locale: 'ko-KR',
-            events: {},
+            focusedDay: DateTime.now(),
             onDaySelected: _onDaySelected,
           ),
           FutureBuilder(
@@ -104,7 +100,7 @@ class MealCalendarState extends State<MealCalendar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIdx,
-        selectedItemColor: Theme.of(context).hintColor,
+        selectedItemColor: Colors.lightBlue[600],
         unselectedItemColor: Theme.of(context).accentColor,
         onTap: (selectedIdx) => setState(
           () {

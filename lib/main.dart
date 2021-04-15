@@ -5,8 +5,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
+import 'package:sjconnect/selftestlogin.dart';
 import 'package:sjconnect/settings.dart';
-import 'package:sjconnect/timetable.dart';
+import 'package:sjconnect/selftest.dart';
 import 'package:neis_api/school/school.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
@@ -59,7 +60,7 @@ class MyApp extends StatelessWidget {
         cardColor: Colors.grey[850],
         focusColor: Colors.grey[800],
         highlightColor: Colors.grey[800],
-        hintColor: Colors.lightBlue[600],
+        // hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.white,
         ),
@@ -103,15 +104,37 @@ final formatter = DateFormat('yyyyMMdd');
 class _MyHomePageState extends State<MyHomePage> {
   final school = School(Region.CHUNGBUK, '8000376');
   SharedPreferences prefs;
+  String lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+
   @override
   void initState() {
     super.initState();
     setupPref().then(
       (value) {
         prefs = value;
-        debugPrint(
-          prefs.getString('IdCode'),
-        );
+        var now = DateFormat('yyyy-MM-dd').format(DateTime.now());
+        var nextDay = DateFormat('yyyy-MM-dd')
+            .parse(prefs.getString('selfTestLastSubmit'))
+            .add(Duration(days: 1));
+
+        print(nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)));
+
+        if (prefs.getString('selfTestLastSubmit') == '' ||
+            prefs.getString('selfTestLastSubmit') == null) {
+          setState(() {
+            lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+          });
+        } else {
+          if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) { // 현재 날짜가 다음 날이 아닌 경우
+            setState(() {
+              lastSubmitDisplayed = prefs.getString('selfTestLastSubmit');
+            });
+          } else {
+            setState(() {
+              lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+            });
+          }
+        }
       },
     );
   }
@@ -313,12 +336,43 @@ class _MyHomePageState extends State<MyHomePage> {
                       cardTitle: '🕖 시간표',
                       cardContent: '나만의 시간표를 확인하세요.',
                     ),
-                    CardWidget(
-                      cardTitle: '☑️ 코로나 19 자가진단',
-                      cardContent: '등교하기 전, 자가진단은 하셨나요?',
-                      onClick: () {
-                        _launchURL('https://hcs.eduro.go.kr');
-                      },
+                    Builder(
+                      builder: (context) => CardWidget(
+                        cardTitle: '☑️ 코로나 19 자가진단',
+                        cardContent:
+                            '등교하기 전, 자가진단은 하셨나요?\n마지막 제출 일시: $lastSubmitDisplayed',
+                        onClick: () async {
+                          if (prefs.getString('selfTestToken') == null ||
+                              prefs.getString('selfTestToken') == '-1') {
+                            okOnlyDialog(
+                              context,
+                              '코로나 19 자가진단',
+                              '로그인 정보가 등록되어 있지 않습니다. 로그인을 진행합니다.',
+                              () {
+                                Navigator.pop(context);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SelfTestLoginPage(),
+                                  ),
+                                );
+                              },
+                            );
+                          } else {
+                            await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => SelfTestPage(),
+                              ),
+                            );
+                            setState(() {
+                              lastSubmitDisplayed =
+                                  prefs.getString('selfTestLastSubmit');
+                            });
+                          }
+                          //_launchURL('https://hcs.eduro.go.kr');
+                        },
+                      ),
                     ),
                     CardWidget(
                       cardTitle: '💳 H4Pay',
