@@ -99,7 +99,7 @@ class IdCardPageState extends State<IdCardPage> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(color: Theme.of(context).focusColor),
+        color: Theme.of(context).focusColor,
         padding: EdgeInsets.all(2.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
