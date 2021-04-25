@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sjconnect/appinfo.dart';
 import 'package:sjconnect/tools/dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'components/card.dart';
@@ -97,7 +98,8 @@ class SettingsPageState extends State<SettingsPage> {
                     cardContent: '서전고 알리미의 버그를 알려주세요!',
                     onClick: () async {
                       if (Platform.isAndroid == true) {
-                        AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+                        AndroidDeviceInfo androidInfo =
+                            await deviceInfo.androidInfo;
                         _launchURL(
                           Uri.encodeFull(
                               'mailto:support@yoon-lab.xyz?subject=서전고 알리미 버그 제보&body=앱 버전: 1.0.0-alpha\n실행 디바이스: ${androidInfo.model}\nOS: Android ${androidInfo.version.release}\n 빌드 버전: ${androidInfo.bootloader}'),
@@ -109,6 +111,18 @@ class SettingsPageState extends State<SettingsPage> {
                               'mailto:support@yoon-lab.xyz?subject=서전고 알리미 버그 보고&body=앱 버전: 1.0.0-alpha\n실행 디바이스: ${iosInfo.utsname.machine.iOSProductName}\nOS: iOS ${iosInfo.systemVersion}\n'),
                         );
                       }
+                    },
+                  ),
+                  CardWidget(
+                    cardTitle: '앱 정보',
+                    cardContent: '서전고 알리미 정보',
+                    onClick: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AppInfoPage(),
+                        ),
+                      );
                     },
                   ),
                   CardWidget(

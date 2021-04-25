@@ -3,12 +3,14 @@ import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/selftestlogin.dart';
 import 'package:sjconnect/settings.dart';
 import 'package:sjconnect/selftest.dart';
 import 'package:neis_api/school/school.dart';
+import 'package:sjconnect/timetable.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
 import 'package:intl/date_symbol_data_local.dart' as locale;
@@ -29,8 +31,10 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.black,
         cardColor: Colors.grey[300],
         focusColor: Colors.grey[200],
-        highlightColor: Colors.white,
         hintColor: Colors.lightBlue[600],
+        errorColor: Colors.white,
+        cursorColor: Colors.grey[300],
+        canvasColor: Colors.grey[400],
         iconTheme: IconThemeData(
           color: Colors.black,
         ),
@@ -59,7 +63,9 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.grey[300],
         cardColor: Colors.grey[850],
         focusColor: Colors.grey[800],
-        highlightColor: Colors.grey[800],
+        errorColor: Colors.grey[800],
+        cursorColor: Colors.grey[700],
+        unselectedWidgetColor: Colors.grey[600],
         // hintColor: Colors.lightBlue[600],
         iconTheme: IconThemeData(
           color: Colors.white,
@@ -125,7 +131,8 @@ class _MyHomePageState extends State<MyHomePage> {
             lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
           });
         } else {
-          if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) { // 현재 날짜가 다음 날이 아닌 경우
+          if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) {
+            // 현재 날짜가 다음 날이 아닌 경우
             setState(() {
               lastSubmitDisplayed = prefs.getString('selfTestLastSubmit');
             });
@@ -301,9 +308,51 @@ class _MyHomePageState extends State<MyHomePage> {
                               cardTitle: '오늘의 급식',
                               cardContent: '급식을 불러오지 못했습니다.');
                         }
-                        return CardWidget(
-                          cardTitle: '오늘의 급식',
-                          cardContent: '로딩 중이에요 :)',
+                        return Card(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(25),
+                            ),
+                          ),
+                          color: Theme.of(context).errorColor,
+                          child: InkWell(
+                            borderRadius: BorderRadius.all(Radius.circular(25)),
+                            child: Container(
+                              padding: EdgeInsets.all(18),
+                              width: double.infinity,
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    child: Text(
+                                      '오늘의 급식',
+                                      style: TextStyle(fontSize: 18),
+                                    ),
+                                    margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
+                                  ),
+                                  Shimmer.fromColors(
+                                    baseColor: Theme.of(context).cursorColor,
+                                    highlightColor:
+                                        Theme.of(context).unselectedWidgetColor,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(15),
+                                          ),
+                                          color: Colors.grey[800]),
+                                      child: Text(
+                                        '이것은 스켈레톤 UI입니다.',
+                                        style: TextStyle(
+                                            color: Colors.transparent),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
                         );
                       },
                     ),
@@ -314,15 +363,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           return CardWidget(
                             cardTitle: '📅 오늘의 학사일정',
                             cardContent: snapshot.data[now.day - 1].schedule,
-                            onClick: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      ScheduleCalendar(school),
-                                ),
-                              );
-                            },
                           );
                         } else {
                           return CardWidget(
@@ -335,6 +375,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     CardWidget(
                       cardTitle: '🕖 시간표',
                       cardContent: '나만의 시간표를 확인하세요.',
+                      onClick: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TimeTablePage(),
+                          ),
+                        );
+                      },
                     ),
                     Builder(
                       builder: (context) => CardWidget(
@@ -366,8 +414,36 @@ class _MyHomePageState extends State<MyHomePage> {
                               ),
                             );
                             setState(() {
-                              lastSubmitDisplayed =
-                                  prefs.getString('selfTestLastSubmit');
+                              var now = DateFormat('yyyy-MM-dd')
+                                  .format(DateTime.now());
+                              var nextDay = DateFormat('yyyy-MM-dd')
+                                  .parse(prefs.getString('selfTestLastSubmit'))
+                                  .add(Duration(days: 1));
+
+                              print(nextDay.isAfter(
+                                  DateFormat('yyyy-MM-dd').parse(now)));
+
+                              if (prefs.getString('selfTestLastSubmit') == '' ||
+                                  prefs.getString('selfTestLastSubmit') ==
+                                      null) {
+                                setState(() {
+                                  lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+                                });
+                              } else {
+                                if (nextDay.isAfter(
+                                        DateFormat('yyyy-MM-dd').parse(now)) ==
+                                    true) {
+                                  // 현재 날짜가 다음 날이 아닌 경우
+                                  setState(() {
+                                    lastSubmitDisplayed =
+                                        prefs.getString('selfTestLastSubmit');
+                                  });
+                                } else {
+                                  setState(() {
+                                    lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+                                  });
+                                }
+                              }
                             });
                           }
                           //_launchURL('https://hcs.eduro.go.kr');
