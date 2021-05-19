@@ -105,7 +105,6 @@ class ScheduleCalendarState extends State<ScheduleCalendar> {
                     ];
                   }
                 }
-
                 return Column(
                   children: [
                     Container(

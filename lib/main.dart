@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:sjconnect/calendar.dart';
 import 'package:sjconnect/idcard.dart';
 import 'package:sjconnect/selftestlogin.dart';
 import 'package:sjconnect/settings.dart';
 import 'package:sjconnect/selftest.dart';
 import 'package:neis_api/school/school.dart';
+import 'package:sjconnect/calendar_meal.dart';
+import 'package:sjconnect/calendar_schedule.dart';
 import 'package:sjconnect/timetable.dart';
 import 'components/card.dart';
 import 'tools/dialogs.dart';
@@ -373,6 +374,15 @@ class _MyHomePageState extends State<MyHomePage> {
                           return CardWidget(
                             cardTitle: '📅 오늘의 학사일정',
                             cardContent: snapshot.data[now.day - 1].schedule,
+                            onClick: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      ScheduleCalendar(school),
+                                ),
+                              );
+                            },
                           );
                         } else {
                           return CardWidget(

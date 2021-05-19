@@ -116,24 +116,26 @@ class MealCalendarState extends State<MealCalendar> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 meals = snapshot.data;
-                return Container(
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  padding: EdgeInsets.all(18),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    color: Theme.of(context).highlightColor,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: Text(selectedMeal == "급식을 불러오는 중입니다."
-                            ? meals[now.day - 1].breakfast
-                            : selectedMeal),
-                      ),
-                    ],
+                return SingleChildScrollView(
+                  child: Container(
+                    margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
+                    padding: EdgeInsets.all(18),
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      color: Theme.of(context).highlightColor,
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Text(selectedMeal == "급식을 불러오는 중입니다."
+                              ? meals[now.day - 1].breakfast
+                              : selectedMeal),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
