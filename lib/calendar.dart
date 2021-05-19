@@ -76,24 +76,28 @@ class MealCalendarState extends State<MealCalendar> {
               if (snapshot.hasData) {
                 meals = snapshot.data;
                 selectedDay = now.day;
-                return Container(
-                  margin: EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  padding: EdgeInsets.all(18),
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(25)),
-                    color: Theme.of(context).highlightColor,
+                return Card(
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(25),
+                    ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        child: Text(selectedMeal == "급식을 불러오는 중입니다."
-                            ? meals[now.day - 1].breakfast
-                            : selectedMeal),
-                      ),
-                    ],
+                  color: Theme.of(context).errorColor,
+                  child: Container(
+                    padding: EdgeInsets.all(18),
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          child: Text(selectedMeal == "급식을 불러오는 중입니다."
+                              ? meals[now.day - 1].breakfast
+                              : selectedMeal),
+                        ),
+                      ],
+                    ),
                   ),
                 );
               }
@@ -104,7 +108,7 @@ class MealCalendarState extends State<MealCalendar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIdx,
-        selectedItemColor: Theme.of(context).hintColor,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Theme.of(context).accentColor,
         onTap: (selectedIdx) => setState(
           () {

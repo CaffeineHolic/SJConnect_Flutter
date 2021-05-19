@@ -32,11 +32,17 @@ dependencies:
   table_calendar: ^3.0.0
   firebase_messaging:
   url_launcher:
-  neis_api:
   searchable_dropdown: ^1.1.3
   sqflite: ^2.0.0+3
   path: ^1.8.0
   path_provider: ^2.0.1
+  url_launcher:
+  encrypt:
+  package_info:
+  device_info:
+  ios_utsname_ext:
+  flutter_native_splash:
+  shimmer:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -59,3 +65,9 @@ flutter:
   assets:
     - assets/letterlogo.png
     - assets/profile.svg
+
+flutter_native_splash:
+  color: "#f2f2f2"
+  color_dark: "#212121"
+  image: "assets/launch.png"
+  image_dark: "assets/launch_dark.png"
