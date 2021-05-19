@@ -129,28 +129,30 @@ class _MyHomePageState extends State<MyHomePage> {
     setupPref().then(
       (value) {
         prefs = value;
-        var now = DateFormat('yyyy-MM-dd').format(DateTime.now());
-        var nextDay = DateFormat('yyyy-MM-dd')
-            .parse(prefs.getString('selfTestLastSubmit'))
-            .add(Duration(days: 1));
+        if (prefs.getString("selfTestLastSubmit") != null) {
+          var now = DateFormat('yyyy-MM-dd').format(DateTime.now());
+          var nextDay = DateFormat('yyyy-MM-dd')
+              .parse(prefs.getString('selfTestLastSubmit'))
+              .add(Duration(days: 1));
 
-        print(nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)));
+          print(nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)));
 
-        if (prefs.getString('selfTestLastSubmit') == '' ||
-            prefs.getString('selfTestLastSubmit') == null) {
-          setState(() {
-            lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
-          });
-        } else {
-          if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) {
-            // 현재 날짜가 다음 날이 아닌 경우
-            setState(() {
-              lastSubmitDisplayed = prefs.getString('selfTestLastSubmit');
-            });
-          } else {
+          if (prefs.getString('selfTestLastSubmit') == '' ||
+              prefs.getString('selfTestLastSubmit') == null) {
             setState(() {
               lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
             });
+          } else {
+            if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) {
+              // 현재 날짜가 다음 날이 아닌 경우
+              setState(() {
+                lastSubmitDisplayed = prefs.getString('selfTestLastSubmit');
+              });
+            } else {
+              setState(() {
+                lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
+              });
+            }
           }
         }
       },
