@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,73 +25,82 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primaryColor: Color(0xfff2f2f2),
-        accentColor: Colors.black,
-        cardColor: Colors.grey[300],
-        focusColor: Colors.grey[200],
-        hintColor: Colors.lightBlue[600],
-        errorColor: Colors.white,
-        cursorColor: Colors.grey[300],
-        canvasColor: Colors.grey[400],
-        iconTheme: IconThemeData(
-          color: Colors.black,
-        ),
-        textTheme: TextTheme(
-          subtitle1: TextStyle(
-            // 카드 서브텍스트
-            fontSize: 15,
-            color: Color(0xff909090),
-            height: 1.15,
-          ),
-          subtitle2: TextStyle(
-            // 학생증 생년월일
-            fontSize: 15,
+    return ScreenUtilInit(
+      designSize: Size(360, 690),
+      builder: () => MaterialApp(
+        theme: ThemeData(
+          brightness: Brightness.light,
+          primaryColor: Color(0xfff2f2f2),
+          accentColor: Colors.black,
+          cardColor: Colors.grey[300],
+          focusColor: Colors.grey[200],
+          hintColor: Colors.lightBlue[600],
+          errorColor: Colors.white,
+          cursorColor: Colors.grey[300],
+          canvasColor: Colors.grey[400],
+          iconTheme: IconThemeData(
             color: Colors.black,
           ),
-          headline4: TextStyle(
-            // 학생증 이름
-            fontSize: 30,
-            color: Colors.black,
+          textTheme: TextTheme(
+            subtitle1: TextStyle(
+              // 카드 서브텍스트
+              fontSize: 15,
+              color: Color(0xff909090),
+              height: 1.15,
+            ),
+            subtitle2: TextStyle(
+              // 학생증 생년월일
+              fontSize: 15,
+              color: Colors.black,
+            ),
+            headline4: TextStyle(
+              // 학생증 이름
+              fontSize: 30,
+              color: Colors.black,
+            ),
           ),
         ),
+        darkTheme: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Colors.grey[900],
+          accentColor: Colors.grey[300],
+          cardColor: Colors.grey[850],
+          focusColor: Colors.grey[800],
+          errorColor: Colors.grey[800],
+          cursorColor: Colors.grey[700],
+          unselectedWidgetColor: Colors.grey[600],
+          // hintColor: Colors.lightBlue[600],
+          iconTheme: IconThemeData(
+            color: Colors.white,
+          ),
+          textTheme: TextTheme(
+            subtitle1: TextStyle(
+              // 카드 서브텍스트
+              fontSize: 15,
+              color: Color(0xffababab),
+              height: 1.15,
+            ),
+            subtitle2: TextStyle(
+              // 학생증 생년월일
+              fontSize: 15.sp,
+              color: Colors.black,
+            ),
+            headline4: TextStyle(
+              // 학생증 이름
+              fontSize: 30.sp,
+              color: Colors.black,
+            ),
+          ),
+        ),
+        themeMode: ThemeMode.system,
+        home: MyHomePage(title: 'Flutter Demo Home Page'),
+        builder: (context, widget) {
+          return MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+            child: widget,
+          );
+        },
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.grey[900],
-        accentColor: Colors.grey[300],
-        cardColor: Colors.grey[850],
-        focusColor: Colors.grey[800],
-        errorColor: Colors.grey[800],
-        cursorColor: Colors.grey[700],
-        unselectedWidgetColor: Colors.grey[600],
-        // hintColor: Colors.lightBlue[600],
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
-        textTheme: TextTheme(
-          subtitle1: TextStyle(
-            // 카드 서브텍스트
-            fontSize: 15,
-            color: Color(0xffababab),
-            height: 1.15,
-          ),
-          subtitle2: TextStyle(
-            // 학생증 생년월일
-            fontSize: 15,
-            color: Colors.black,
-          ),
-          headline4: TextStyle(
-            // 학생증 이름
-            fontSize: 30,
-            color: Colors.black,
-          ),
-        ),
-      ),
-      themeMode: ThemeMode.system,
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }

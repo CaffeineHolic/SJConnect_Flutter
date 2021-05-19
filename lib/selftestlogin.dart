@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
 import 'package:sjconnect/tools/apipost.dart';
 import 'package:sjconnect/tools/dialogs.dart';
 import 'package:sjconnect/tools/encrypt.dart';

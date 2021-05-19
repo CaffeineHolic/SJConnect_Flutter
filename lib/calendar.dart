@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:neis_api/meal/meal.dart';
 import 'package:neis_api/school/school.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class MealCalendar extends StatefulWidget {
   final School school;
@@ -77,7 +78,7 @@ class MealCalendarState extends State<MealCalendar> {
                 meals = snapshot.data;
                 selectedDay = now.day;
                 return Card(
-                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10.w),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(
                       Radius.circular(25),
@@ -85,16 +86,19 @@ class MealCalendarState extends State<MealCalendar> {
                   ),
                   color: Theme.of(context).errorColor,
                   child: Container(
-                    padding: EdgeInsets.all(18),
+                    padding: EdgeInsets.all(18.w),
                     width: double.infinity,
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Container(
-                          child: Text(selectedMeal == "급식을 불러오는 중입니다."
-                              ? meals[now.day - 1].breakfast
-                              : selectedMeal),
+                          child: Text(
+                            selectedMeal == "급식을 불러오는 중입니다."
+                                ? meals[now.day - 1].breakfast
+                                : selectedMeal,
+                            style: TextStyle(fontSize: 15, height: 1.15),
+                          ),
                         ),
                       ],
                     ),
