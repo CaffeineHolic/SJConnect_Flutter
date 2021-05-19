@@ -11,7 +11,7 @@ class IdCardPage extends StatefulWidget {
 }
 
 class IdCardPageState extends State<IdCardPage> {
-  String IdCode = '';
+  String idCode = '';
   SharedPreferences prefs;
 
   @override
@@ -23,7 +23,7 @@ class IdCardPageState extends State<IdCardPage> {
   loadIdCode() async {
     prefs = await SharedPreferences.getInstance();
     setState(() {
-      IdCode = prefs.getString("IdCode");
+      idCode = prefs.getString("IdCode");
     });
   }
 
@@ -99,7 +99,7 @@ class IdCardPageState extends State<IdCardPage> {
         ],
       ),
       body: Container(
-        decoration: BoxDecoration(color: Theme.of(context).focusColor),
+        color: Theme.of(context).focusColor,
         padding: EdgeInsets.all(2.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -141,7 +141,7 @@ class IdCardPageState extends State<IdCardPage> {
                   Align(
                     alignment: Alignment.center,
                     child: BarCodeImage(
-                      params: Code39BarCodeParams(IdCode,
+                      params: Code39BarCodeParams(idCode,
                           barHeight: 60.0, withText: false),
                       onError: (error) {
                         debugPrint("error occoured: " + error);
