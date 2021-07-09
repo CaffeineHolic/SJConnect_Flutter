@@ -11,7 +11,6 @@ class AppInfoPageState extends State<AppInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         shadowColor: Colors.transparent,
@@ -58,7 +57,6 @@ class AppInfoPageState extends State<AppInfoPage> {
                         Radius.circular(25),
                       ),
                     ),
-                    color: Theme.of(context).errorColor,
                     child: InkWell(
                       onTap: () {},
                       borderRadius: BorderRadius.all(Radius.circular(25)),
@@ -85,7 +83,6 @@ class AppInfoPageState extends State<AppInfoPage> {
                         Radius.circular(25),
                       ),
                     ),
-                    color: Theme.of(context).errorColor,
                     child: InkWell(
                       onTap: () {},
                       borderRadius: BorderRadius.all(Radius.circular(25)),

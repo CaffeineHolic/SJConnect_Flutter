@@ -33,7 +33,6 @@ class SelfTestPageState extends State<SelfTestPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         shadowColor: Colors.transparent,
@@ -49,6 +48,7 @@ class SelfTestPageState extends State<SelfTestPage> {
         actions: [
           IconButton(
               icon: Icon(Icons.send),
+              color: Theme.of(context).iconTheme.color,
               onPressed: () {
                 apiPost(
                   'https://cbehcs.eduro.go.kr/registerServey',

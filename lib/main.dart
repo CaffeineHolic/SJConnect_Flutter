@@ -30,15 +30,6 @@ class MyApp extends StatelessWidget {
       designSize: Size(360, 690),
       builder: () => MaterialApp(
         theme: ThemeData(
-          brightness: Brightness.light,
-          primaryColor: Color(0xfff2f2f2),
-          accentColor: Colors.black,
-          cardColor: Colors.grey[300],
-          focusColor: Colors.grey[200],
-          hintColor: Colors.lightBlue[600],
-          errorColor: Colors.white,
-          cursorColor: Colors.grey[300],
-          canvasColor: Colors.grey[400],
           iconTheme: IconThemeData(
             color: Colors.black,
           ),
@@ -57,38 +48,6 @@ class MyApp extends StatelessWidget {
             headline4: TextStyle(
               // 학생증 이름
               fontSize: 30,
-              color: Colors.black,
-            ),
-          ),
-        ),
-        darkTheme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.grey[900],
-          accentColor: Colors.grey[300],
-          cardColor: Colors.grey[850],
-          focusColor: Colors.grey[800],
-          errorColor: Colors.grey[800],
-          cursorColor: Colors.grey[700],
-          unselectedWidgetColor: Colors.grey[600],
-          // hintColor: Colors.lightBlue[600],
-          iconTheme: IconThemeData(
-            color: Colors.white,
-          ),
-          textTheme: TextTheme(
-            subtitle1: TextStyle(
-              // 카드 서브텍스트
-              fontSize: 15,
-              color: Color(0xffababab),
-              height: 1.15,
-            ),
-            subtitle2: TextStyle(
-              // 학생증 생년월일
-              fontSize: 15.sp,
-              color: Colors.black,
-            ),
-            headline4: TextStyle(
-              // 학생증 이름
-              fontSize: 30.sp,
               color: Colors.black,
             ),
           ),
@@ -129,12 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setupPref().then(
       (value) {
         prefs = value;
+        var nextDay;
         var now = DateFormat('yyyy-MM-dd').format(DateTime.now());
-        var nextDay = DateFormat('yyyy-MM-dd')
-            .parse(prefs.getString('selfTestLastSubmit'))
-            .add(Duration(days: 1));
-
-        print(nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)));
 
         if (prefs.getString('selfTestLastSubmit') == '' ||
             prefs.getString('selfTestLastSubmit') == null) {
@@ -142,6 +97,9 @@ class _MyHomePageState extends State<MyHomePage> {
             lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
           });
         } else {
+          nextDay = DateFormat('yyyy-MM-dd')
+              .parse(prefs.getString('selfTestLastSubmit'))
+              .add(Duration(days: 1));
           if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) {
             // 현재 날짜가 다음 날이 아닌 경우
             setState(() {
@@ -168,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         automaticallyImplyLeading: false,
         toolbarHeight: 70,
@@ -225,7 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 "assets/profile.svg",
                                 width: 50,
                                 height: 50,
-                                color: Theme.of(context).accentColor,
                               ),
                               Container(
                                 margin: EdgeInsets.only(left: 20),
@@ -326,7 +282,6 @@ class _MyHomePageState extends State<MyHomePage> {
                               Radius.circular(25),
                             ),
                           ),
-                          color: Theme.of(context).errorColor,
                           child: InkWell(
                             borderRadius: BorderRadius.all(Radius.circular(25)),
                             child: Container(
@@ -344,9 +299,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                     margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
                                   ),
                                   Shimmer.fromColors(
-                                    baseColor: Theme.of(context).cursorColor,
-                                    highlightColor:
-                                        Theme.of(context).unselectedWidgetColor,
+                                    highlightColor: Colors.grey[400],
+                                    baseColor: Colors.grey[350],
                                     child: Container(
                                       decoration: BoxDecoration(
                                           borderRadius: BorderRadius.all(
@@ -436,27 +390,23 @@ class _MyHomePageState extends State<MyHomePage> {
                             setState(() {
                               var now = DateFormat('yyyy-MM-dd')
                                   .format(DateTime.now());
-                              var nextDay = DateFormat('yyyy-MM-dd')
-                                  .parse(prefs.getString('selfTestLastSubmit'))
-                                  .add(Duration(days: 1));
-
-                              print(nextDay.isAfter(
-                                  DateFormat('yyyy-MM-dd').parse(now)));
-
-                              if (prefs.getString('selfTestLastSubmit') == '' ||
-                                  prefs.getString('selfTestLastSubmit') ==
-                                      null) {
+                              final lastSubmit =
+                                  prefs.getString('selfTestLastSubmit');
+                              if (lastSubmit == '' || lastSubmit == null) {
                                 setState(() {
                                   lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
                                 });
                               } else {
+                                var nextDay;
+                                nextDay = DateFormat('yyyy-MM-dd')
+                                    .parse(lastSubmit)
+                                    .add(Duration(days: 1));
                                 if (nextDay.isAfter(
                                         DateFormat('yyyy-MM-dd').parse(now)) ==
                                     true) {
                                   // 현재 날짜가 다음 날이 아닌 경우
                                   setState(() {
-                                    lastSubmitDisplayed =
-                                        prefs.getString('selfTestLastSubmit');
+                                    lastSubmitDisplayed = lastSubmit;
                                   });
                                 } else {
                                   setState(() {

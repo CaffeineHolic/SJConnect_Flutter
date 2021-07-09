@@ -26,7 +26,6 @@ class _CardWidgetState extends State<CardWidget> {
           Radius.circular(25),
         ),
       ),
-      color: Theme.of(context).errorColor,
       child: InkWell(
         onTap: widget.onClick,
         borderRadius: BorderRadius.all(Radius.circular(25)),

@@ -38,7 +38,6 @@ class SelfTestLoginPageState extends State<SelfTestLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: Theme.of(context).primaryColor,
       appBar: AppBar(
         centerTitle: true,
         shadowColor: Colors.transparent,

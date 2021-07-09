@@ -113,7 +113,6 @@ class ScheduleCalendarState extends State<ScheduleCalendar> {
                       width: double.infinity,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(25)),
-                        color: Theme.of(context).highlightColor,
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,

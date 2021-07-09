@@ -123,7 +123,6 @@ class MealCalendarState extends State<MealCalendar> {
                     width: double.infinity,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(25)),
-                      color: Theme.of(context).highlightColor,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.max,
@@ -146,8 +145,6 @@ class MealCalendarState extends State<MealCalendar> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIdx,
-        selectedItemColor: Theme.of(context).hintColor,
-        unselectedItemColor: Theme.of(context).accentColor,
         onTap: (selectedIdx) => setState(
           () {
             currentIdx = selectedIdx;

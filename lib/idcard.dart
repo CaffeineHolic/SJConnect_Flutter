@@ -33,7 +33,6 @@ class IdCardPageState extends State<IdCardPage> {
       backgroundColor: Colors.transparent,
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: Theme.of(context).cardColor,
         shadowColor: Colors.transparent,
         automaticallyImplyLeading: false,
         shape: ContinuousRectangleBorder(
@@ -84,22 +83,9 @@ class IdCardPageState extends State<IdCardPage> {
               );
             },
           ),
-          /*PopupMenuItem(
-            child: IconButton(
-              icon: Icon(
-                Icons.remove_circle_outline,
-                color: Theme.of(context).iconTheme.color,
-              ),
-              onPressed: () {
-                prefs.remove("IdCode");
-                Navigator.pop(context);
-              },
-            ),
-          ),*/
         ],
       ),
       body: Container(
-        color: Theme.of(context).focusColor,
         padding: EdgeInsets.all(2.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
