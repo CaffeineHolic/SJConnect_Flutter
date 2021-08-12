@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sjconnect/appinfo.dart';
-import 'package:sjconnect/tools/dialogs.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'components/card.dart';
 import 'package:ios_utsname_ext/extension.dart';
@@ -17,21 +15,11 @@ void _launchURL(String _url) async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 
 class SettingsPageState extends State<SettingsPage> {
-  SharedPreferences prefs;
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 
   @override
   void initState() {
     super.initState();
-    setupPref().then(
-      (value) {
-        prefs = value;
-      },
-    );
-  }
-
-  Future<SharedPreferences> setupPref() async {
-    return await SharedPreferences.getInstance();
   }
 
   @override
@@ -69,22 +57,6 @@ class SettingsPageState extends State<SettingsPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisSize: MainAxisSize.max,
                   children: [
-                    CardWidget(
-                      cardTitle: '코로나 19 자가진단 로그아웃',
-                      cardContent: '로그인 정보를 삭제합니다. 이후 다시 로그인이 필요합니다.',
-                      onClick: () {
-                        prefs.remove('selfTestName');
-                        prefs.remove('selfTestToken');
-                        okOnlyDialog(
-                          context,
-                          '로그아웃',
-                          '로그아웃이 완료되었습니다.',
-                          () {
-                            Navigator.pop(context);
-                          },
-                        );
-                      },
-                    ),
                     CardWidget(
                       cardTitle: '시간표 백업',
                       cardContent: '시간표를 파일로 내보냅니다.',

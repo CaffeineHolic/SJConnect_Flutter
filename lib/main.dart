@@ -6,9 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:sjconnect/idcard.dart';
-import 'package:sjconnect/selftestlogin.dart';
 import 'package:sjconnect/settings.dart';
-import 'package:sjconnect/selftest.dart';
 import 'package:neis_api/school/school.dart';
 import 'package:sjconnect/calendar_meal.dart';
 import 'package:sjconnect/calendar_schedule.dart';
@@ -80,39 +78,10 @@ final formatter = DateFormat('yyyyMMdd');
 class _MyHomePageState extends State<MyHomePage> {
   final school = School(Region.CHUNGBUK, '8000376');
   SharedPreferences prefs;
-  String lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
 
   @override
   void initState() {
     super.initState();
-    setupPref().then(
-      (value) {
-        prefs = value;
-        var nextDay;
-        var now = DateFormat('yyyy-MM-dd').format(DateTime.now());
-
-        if (prefs.getString('selfTestLastSubmit') == '' ||
-            prefs.getString('selfTestLastSubmit') == null) {
-          setState(() {
-            lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
-          });
-        } else {
-          nextDay = DateFormat('yyyy-MM-dd')
-              .parse(prefs.getString('selfTestLastSubmit'))
-              .add(Duration(days: 1));
-          if (nextDay.isAfter(DateFormat('yyyy-MM-dd').parse(now)) == true) {
-            // 현재 날짜가 다음 날이 아닌 경우
-            setState(() {
-              lastSubmitDisplayed = prefs.getString('selfTestLastSubmit');
-            });
-          } else {
-            setState(() {
-              lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
-            });
-          }
-        }
-      },
-    );
   }
 
   Future<SharedPreferences> setupPref() async {
@@ -357,68 +326,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           ),
                         );
                       },
-                    ),
-                    Builder(
-                      builder: (context) => CardWidget(
-                        cardTitle: '☑️ 코로나 19 자가진단',
-                        cardContent:
-                            '등교하기 전, 자가진단은 하셨나요?\n마지막 제출 일시: $lastSubmitDisplayed',
-                        onClick: () async {
-                          if (prefs.getString('selfTestToken') == null ||
-                              prefs.getString('selfTestToken') == '-1') {
-                            okOnlyDialog(
-                              context,
-                              '코로나 19 자가진단',
-                              '로그인 정보가 등록되어 있지 않습니다. 로그인을 진행합니다.',
-                              () {
-                                Navigator.pop(context);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SelfTestLoginPage(),
-                                  ),
-                                );
-                              },
-                            );
-                          } else {
-                            await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SelfTestPage(),
-                              ),
-                            );
-                            setState(() {
-                              var now = DateFormat('yyyy-MM-dd')
-                                  .format(DateTime.now());
-                              final lastSubmit =
-                                  prefs.getString('selfTestLastSubmit');
-                              if (lastSubmit == '' || lastSubmit == null) {
-                                setState(() {
-                                  lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
-                                });
-                              } else {
-                                var nextDay;
-                                nextDay = DateFormat('yyyy-MM-dd')
-                                    .parse(lastSubmit)
-                                    .add(Duration(days: 1));
-                                if (nextDay.isAfter(
-                                        DateFormat('yyyy-MM-dd').parse(now)) ==
-                                    true) {
-                                  // 현재 날짜가 다음 날이 아닌 경우
-                                  setState(() {
-                                    lastSubmitDisplayed = lastSubmit;
-                                  });
-                                } else {
-                                  setState(() {
-                                    lastSubmitDisplayed = '오늘의 자가진단 기록이 없습니다.';
-                                  });
-                                }
-                              }
-                            });
-                          }
-                          //_launchURL('https://hcs.eduro.go.kr');
-                        },
-                      ),
                     ),
                     CardWidget(
                       cardTitle: '💳 H4Pay',
